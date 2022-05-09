@@ -54,7 +54,7 @@ contract Angrybird is Context, IERC20, Ownable {
     mapping(address => mapping(address => uint256)) private _allowances;
     mapping(address => bool) private _isExcludedFromFee;
     uint256 private constant MAX = type(uint256).max;
-    uint256 private constant _tTotal = 1000000 * 10**DECIMALS;
+    uint256 private constant _tTotal = 100_000_000 * 10**DECIMALS;
     uint256 private _rTotal = (MAX - (MAX % _tTotal));
     uint256 private _tFeeTotal;
     uint256 private _redisFeeOnBuy = 1;

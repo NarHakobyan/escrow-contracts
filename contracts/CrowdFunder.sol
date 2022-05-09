@@ -1,7 +1,4 @@
 // SPDX-License-Identifier: MIT
-// *** EXAMPLE: A crowdfunding example (broadly similar to Kickstarter) ***
-// ** START EXAMPLE **
-
 pragma solidity ^0.8.13;
 
 /// @title CrowdFunder
