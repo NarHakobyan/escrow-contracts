@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv';
 
 import { HardhatUserConfig, task } from 'hardhat/config';
 import '@nomiclabs/hardhat-etherscan';
+import '@nomiclabs/hardhat-solhint';
 import '@nomiclabs/hardhat-waffle';
 import '@typechain/hardhat';
 import 'hardhat-gas-reporter';
@@ -24,7 +25,7 @@ task('accounts', 'Prints the list of accounts', async (_taskArgs, hre) => {
 // Go to https://hardhat.org/config/ to learn more
 
 const config: HardhatUserConfig = {
-  solidity: '0.8.13',
+  solidity: '0.8.9',
   networks,
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
