@@ -8,6 +8,7 @@ import {
 import { fromRpcSig } from 'ethereumjs-util';
 import { Token } from './utils';
 import { constants } from './prelude';
+import BN from 'bn.js';
 
 export const TypedDataVersion = SignTypedDataVersion.V4;
 export const defaultDeadline = constants.MAX_UINT256;

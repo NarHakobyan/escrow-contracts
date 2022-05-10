@@ -1,18 +1,10 @@
-import chai, {
-  Assertion,
-  AssertionError,
-  assert,
-  expect,
-  config,
-  should,
-} from 'chai';
+import chai from 'chai';
 import 'chai-bn';
 import chaiAsPromised from 'chai-as-promised';
 import { toBN, toWei } from 'web3-utils';
 import BN from 'bn.js';
+import { time as timeImpl } from '@openzeppelin/test-helpers';
 chai.use(chaiAsPromised);
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { time: timeImpl } = require('@openzeppelin/test-helpers');
 
 export const constants = {
   ZERO_ADDRESS: '0x0000000000000000000000000000000000000000',
@@ -38,6 +30,3 @@ export const time: Time = timeImpl;
 export function ether(n: string) {
   return toBN(toWei(n, 'ether'));
 }
-
-// chai
-export { Assertion, AssertionError, assert, expect, config, should };

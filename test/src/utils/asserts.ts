@@ -1,5 +1,6 @@
-import { expect, toBN } from './prelude';
+import { toBN } from './prelude';
 import BN from 'bn.js';
+import { expect } from 'chai';
 
 export function toBNExtended(value: string | number | BN): BN {
   if (typeof value === 'string' || typeof value === 'number') {

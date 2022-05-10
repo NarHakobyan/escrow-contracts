@@ -1,12 +1,14 @@
-import { expect, time, ether, toBN } from '../src/prelude';
+import { randomHex, toHex } from 'web3-utils';
+import { expect } from 'chai';
+import { ether, time, toBN } from './src/utils/prelude';
+import { artifacts } from 'hardhat';
 import {
   timeIncreaseTo,
   fixSignature,
   signMessage,
   trackReceivedTokenAndTx,
   countInstructions,
-} from '../src/utils';
-import { randomHex, toHex } from 'web3-utils';
+} from './src/utils/utils';
 
 const TokenMock = artifacts.require('TokenMock');
 
