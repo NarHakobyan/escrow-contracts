@@ -16,6 +16,7 @@ module.exports = {
     ecmaVersion: 12,
   },
   rules: {
+    'node/no-unsupported-features/node-builtins': 'off',
     'node/no-unpublished-import': 'off',
     'node/no-missing-import': 'off',
     'node/no-unsupported-features/es-syntax': [
