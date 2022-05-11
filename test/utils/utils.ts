@@ -1,6 +1,7 @@
-import { promisify } from 'util';
-import { constants, time, toBN } from './prelude';
+import { ethers } from 'hardhat';
+import { constants, time } from './prelude';
 import BN from 'bn.js';
+import { toBN } from "web3-utils";
 
 export async function timeIncreaseTo(seconds: number | string | BN) {
   const delay = 1000 - new Date().getMilliseconds();
@@ -8,29 +9,24 @@ export async function timeIncreaseTo(seconds: number | string | BN) {
   await time.increaseTo(seconds);
 }
 
-export interface Token extends Truffle.ContractInstance {
-  balanceOf(
-    account: string,
-    txDetails?: Truffle.TransactionDetails,
-  ): Promise<BN>;
-}
-
 export async function trackReceivedTokenAndTx<
   T extends unknown[],
-  U extends Truffle.AnyEvent,
+  // U extends Truffle.AnyEvent,
+  U extends any,
 >(
   token:
-    | Token
+    | any // | Token
     | { address: typeof constants.ZERO_ADDRESS }
     | { address: typeof constants.EEE_ADDRESS },
   wallet: string,
-  txPromise: (...args: T) => Promise<Truffle.TransactionResponse<U>>,
+  // txPromise: (...args: T) => Promise<Truffle.TransactionResponse<U>>,
+  txPromise: (...args: T) => any,
   ...args: T
 ) {
   const [balanceFunc, isETH] =
     'balanceOf' in token
       ? [() => token.balanceOf(wallet), false]
-      : [async () => toBN(await web3.eth.getBalance(wallet)), true];
+      : [async () => await ethers.provider.getBalance(wallet), true];
   const preBalance = await balanceFunc();
   const txResult = await txPromise(...args);
   const txFees =
@@ -56,33 +52,37 @@ export function fixSignature(signature: string) {
 }
 
 // signs message in node (ganache auto-applies "Ethereum Signed Message" prefix)
-export async function signMessage(signer: string, messageHex = '0x') {
-  return fixSignature(await web3.eth.sign(messageHex, signer));
+// export async function signMessage(signer: string, messageHex = '0x') {
+//   return fixSignature(await ethers.eth.sign(messageHex, signer));
+// }
+
+export async function countInstructions(...args: any[]) {
+  return [];
 }
 
-export async function countInstructions(
-  txHash: string,
-  instructions: string[],
-) {
-  if (
-    !web3.currentProvider ||
-    typeof web3.currentProvider === 'string' ||
-    !web3.currentProvider.send
-  ) {
-    throw new Error('Unsupported provider');
-  }
-  const trace = await promisify(
-    web3.currentProvider.send.bind(web3.currentProvider),
-  )({
-    jsonrpc: '2.0',
-    method: 'debug_traceTransaction',
-    params: [txHash, {}],
-    id: new Date().getTime(),
-  });
+// export async function countInstructions(
+//   txHash: string,
+//   instructions: string[],
+// ) {
+//   if (
+//     !web3.currentProvider ||
+//     typeof web3.currentProvider === 'string' ||
+//     !web3.currentProvider.send
+//   ) {
+//     throw new Error('Unsupported provider');
+//   }
+//   const trace = await promisify(
+//     web3.currentProvider.send.bind(web3.currentProvider),
+//   )({
+//     jsonrpc: '2.0',
+//     method: 'debug_traceTransaction',
+//     params: [txHash, {}],
+//     id: new Date().getTime(),
+//   });
 
-  const str = JSON.stringify(trace);
+//   const str = JSON.stringify(trace);
 
-  return instructions.map((instr) => {
-    return str.split('"' + instr.toUpperCase() + '"').length - 1;
-  });
-}
+//   return instructions.map((instr) => {
+//     return str.split('"' + instr.toUpperCase() + '"').length - 1;
+//   });
+// }

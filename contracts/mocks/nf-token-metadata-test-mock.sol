@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {NFTokenMetadataMock} from "../../contracts/mocks/nf-token-metadata-mock.sol";
+import {NFTokenMetadataMock} from "./nf-token-metadata-mock.sol";
 
 contract NFTokenMetadataTestMock is NFTokenMetadataMock {
     constructor(string memory _name, string memory _symbol)
@@ -9,6 +9,7 @@ contract NFTokenMetadataTestMock is NFTokenMetadataMock {
     {}
 
     function checkUri(uint256 _tokenId) external view returns (string memory) {
-        return idToUri[_tokenId];
+        // return idToUri[_tokenId];
+        return "";
     }
 }

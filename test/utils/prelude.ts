@@ -1,10 +1,6 @@
-import chai from 'chai';
-import 'chai-bn';
-import chaiAsPromised from 'chai-as-promised';
 import { toBN, toWei } from 'web3-utils';
 import BN from 'bn.js';
 import { time as timeImpl } from '@openzeppelin/test-helpers';
-chai.use(chaiAsPromised);
 
 export const constants = {
   ZERO_ADDRESS: '0x0000000000000000000000000000000000000000',
@@ -15,9 +11,6 @@ export const constants = {
   MAX_INT256: toBN('2').pow(toBN('255')).sub(toBN('1')).toString(),
   MIN_INT256: toBN('2').pow(toBN('255')).mul(toBN('-1')).toString(),
 } as const;
-
-// utils
-export { toBN };
 
 // test-helpers
 export type Time = {

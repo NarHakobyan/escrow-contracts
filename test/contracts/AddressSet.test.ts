@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { AddressSetMock } from '../../typechain';
-import { constants } from '../src/utils/prelude';
+import { constants } from '../utils/prelude';
 
 describe('AddressSet', function () {
   let addressSetMock: AddressSetMock;

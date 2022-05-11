@@ -1,6 +1,6 @@
-import { toBN } from './prelude';
 import BN from 'bn.js';
 import { expect } from 'chai';
+import { toBN } from 'web3-utils';
 
 export function toBNExtended(value: string | number | BN): BN {
   if (typeof value === 'string' || typeof value === 'number') {
@@ -17,10 +17,7 @@ export function assertRoughlyEqualValues(
   let expectedBN = toBNExtended(expected);
   let actualBN = toBNExtended(actual);
   if (expectedBN.isNeg() !== actualBN.isNeg()) {
-    expect(actualBN).to.be.bignumber.equal(
-      expectedBN,
-      'Values are of different sign',
-    );
+    expect(actualBN).to.be.equal(expectedBN, 'Values are of different sign');
   }
 
   expectedBN = expectedBN.abs();
@@ -37,7 +34,7 @@ export function assertRoughlyEqualValues(
     .mul(toBN(multiplerNumerator.toString()))
     .div(multiplerDenominator);
   if (!diff.lte(treshold)) {
-    expect(actualBN).to.be.bignumber.equal(
+    expect(actualBN).to.be.equal(
       expectedBN,
       `${actual} != ${expected} with ${relativeDiff} precision`,
     );

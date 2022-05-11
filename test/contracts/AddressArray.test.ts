@@ -1,7 +1,7 @@
-import { AddressArrayMock } from './../../typechain/AddressArrayMock.d';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { constants } from '../src/utils/prelude';
+import { AddressArrayMock } from '../../typechain';
+import { constants } from '../utils/prelude';
 
 describe('AddressArray', function () {
   let addressArrayMock: AddressArrayMock;
@@ -64,18 +64,13 @@ describe('AddressArray', function () {
     it('should be get from data with several elements', async function () {
       await addressArrayMock.push(address1);
       await addressArrayMock.push(address2);
-      expect(await addressArrayMock.get()).to.eql([
-        address1,
-        address2,
-      ]);
+      expect(await addressArrayMock.get()).to.eql([address1, address2]);
     });
   });
 
   describe('push', async function () {
     it('should be push to empty data', async function () {
-      const pushedIndex = await addressArrayMock.callStatic.push(
-        address1,
-      );
+      const pushedIndex = await addressArrayMock.callStatic.push(address1);
 
       await addressArrayMock.push(address1);
       const val = await addressArrayMock.at(pushedIndex.sub(1));
@@ -85,9 +80,7 @@ describe('AddressArray', function () {
 
     it('should be push to data with 1 element', async function () {
       await addressArrayMock.push(address1);
-      const pushedIndex = await addressArrayMock.callStatic.push(
-        address2,
-      );
+      const pushedIndex = await addressArrayMock.callStatic.push(address2);
       await addressArrayMock.push(address2);
       expect(await addressArrayMock.at(pushedIndex.sub(1))).to.be.equal(
         address2,
@@ -97,9 +90,7 @@ describe('AddressArray', function () {
     it('should be get push to data with several elements', async function () {
       await addressArrayMock.push(address1);
       await addressArrayMock.push(address2);
-      const pushedIndex = await addressArrayMock.callStatic.push(
-        address3,
-      );
+      const pushedIndex = await addressArrayMock.callStatic.push(address3);
       await addressArrayMock.push(address3);
       expect(await addressArrayMock.at(pushedIndex.sub(1))).to.be.equal(
         address3,
@@ -132,10 +123,7 @@ describe('AddressArray', function () {
       await addressArrayMock.push(address2);
       await addressArrayMock.push(address3);
       await addressArrayMock.pop();
-      expect(await addressArrayMock.get()).to.eql([
-        address1,
-        address2,
-      ]);
+      expect(await addressArrayMock.get()).to.eql([address1, address2]);
     });
 
     it('should be thrown when pops more than elements', async function () {
@@ -173,22 +161,5 @@ describe('AddressArray', function () {
       await addressArrayMock.set(1, address3);
       expect(await addressArrayMock.get()).to.eql([address1, address3]);
     });
-  });
-});
-
-describe('Greeter', () => {
-  it("Should return the new greeting once it's changed", async function () {
-    const Greeter = await ethers.getContractFactory('Greeter');
-    const greeter = await Greeter.deploy('Hello, world!');
-    await greeter.deployed();
-
-    expect(await greeter.greet()).to.equal('Hello, world!');
-
-    const setGreetingTx = await greeter.setGreeting('Hola, mundo!');
-
-    // wait until the transaction is mined
-    await setGreetingTx.wait();
-
-    expect(await greeter.greet()).to.equal('Hola, mundo!');
   });
 });

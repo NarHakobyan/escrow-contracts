@@ -1,38 +1,43 @@
 import { expect } from 'chai';
-import { artifacts } from 'hardhat';
-import { trim0x, buildData, EIP712Domain, Permit, defaultDeadline, buildDataLikeDai, DaiLikePermit, withTarget } from './src/utils/permit';
+import { ethers } from 'hardhat';
+import { DaiLikePermitMock, ERC20PermitMock } from '../typechain';
+import {
+  trim0x,
+  buildData,
+  EIP712Domain,
+  Permit,
+  defaultDeadline,
+  buildDataLikeDai,
+  DaiLikePermit,
+  withTarget,
+} from './utils/permit';
 
-const ERC20PermitMock = artifacts.require('ERC20PermitMock');
-const DaiLikePermitMock = artifacts.require('DaiLikePermitMock');
+describe('Methods', () => {
+  let eRC20PermitMock: ERC20PermitMock;
+  let daiLikePermitMock: DaiLikePermitMock;
+  let ownerAddress: string;
+  beforeEach(async () => {
+    const ERC20PermitMock = await ethers.getContractFactory('ERC20PermitMock');
+    const DaiLikePermitMock = await ethers.getContractFactory(
+      'DaiLikePermitMock',
+    );
+    const [owner] = await ethers.getSigners();
+    ownerAddress = owner.address;
 
-describe('Methods', async () => {
-  const initContext = async () => {
-    const account = web3.eth.accounts.create();
-    const wallet = {
-      address: account.address,
-      privateKey: account.privateKey,
-    };
-
-    const token = await ERC20PermitMock.new(
+    eRC20PermitMock = await ERC20PermitMock.deploy(
       'Token',
       'TKN',
-      wallet.address,
+      ownerAddress,
       '1',
     );
-    const daiLikeToken = await DaiLikePermitMock.new(
-      'DaiLikeToken',
+    daiLikePermitMock = await DaiLikePermitMock.deploy(
+      'daiLikePermitMock',
       'DLT',
-      wallet.address,
+      ownerAddress,
       '1',
     );
-    const chainId = await web3.eth.getChainId();
-    return { account, wallet, token, daiLikeToken, chainId };
-  };
-
-  let context: Awaited<ReturnType<typeof initContext>> = undefined!;
-
-  before(async () => {
-    context = await initContext();
+    await eRC20PermitMock.deployed();
+    await daiLikePermitMock.deployed();
   });
 
   it('should be trimmed', async () => {
@@ -45,12 +50,12 @@ describe('Methods', async () => {
 
   it('should correctly build data for permit', async () => {
     const data = buildData(
-      await context.token.name(),
+      await eRC20PermitMock.name(),
       '1',
-      context.chainId,
-      context.token.address,
-      context.wallet.address,
-      context.wallet.address,
+      1,
+      eRC20PermitMock.address,
+      ownerAddress,
+      ownerAddress,
       '1',
       '1',
     );
@@ -61,14 +66,14 @@ describe('Methods', async () => {
         Permit,
       },
       domain: {
-        name: await context.token.name(),
+        name: await eRC20PermitMock.name(),
         version: '1',
         chainId: 31337,
-        verifyingContract: context.token.address,
+        verifyingContract: eRC20PermitMock,
       },
       message: {
-        owner: context.wallet.address,
-        spender: context.wallet.address,
+        owner: ownerAddress,
+        spender: ownerAddress,
         value: '1',
         nonce: '1',
         deadline: defaultDeadline,
@@ -78,12 +83,12 @@ describe('Methods', async () => {
 
   it('should correctly build data for dai-like permit', async () => {
     const data = buildDataLikeDai(
-      await context.daiLikeToken.name(),
+      await daiLikePermitMock.name(),
       '1',
-      context.chainId,
-      context.daiLikeToken.address,
-      context.wallet.address,
-      context.wallet.address,
+      1,
+      daiLikePermitMock.address,
+      ownerAddress,
+      ownerAddress,
       '1',
       true,
     );
@@ -94,14 +99,14 @@ describe('Methods', async () => {
         Permit: DaiLikePermit,
       },
       domain: {
-        name: await context.daiLikeToken.name(),
+        name: await daiLikePermitMock.name(),
         version: '1',
         chainId: 31337,
-        verifyingContract: context.daiLikeToken.address,
+        verifyingContract: daiLikePermitMock,
       },
       message: {
-        holder: context.wallet.address,
-        spender: context.wallet.address,
+        holder: ownerAddress,
+        spender: ownerAddress,
         nonce: '1',
         allowed: true,
         expiry: defaultDeadline,

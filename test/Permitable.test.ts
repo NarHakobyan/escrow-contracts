@@ -1,179 +1,172 @@
 import { expect } from 'chai';
 import { fromRpcSig } from 'ethereumjs-util';
-import { artifacts, web3 } from 'hardhat';
+import { ethers } from 'hardhat';
+import { BigNumber } from 'ethers';
+import {
+  getPermit,
+  buildData,
+  signWithPk,
+  getPermitLikeDai,
+  buildDataLikeDai,
+} from './utils/permit';
 import { toBN } from 'web3-utils';
-import types from '../typechain-types';
-import { getPermit, buildData, signWithPk, defaultDeadline, getPermitLikeDai, buildDataLikeDai } from './src/utils/permit';
-
-const ERC20PermitMock = artifacts.require('ERC20PermitMock');
-const DaiLikePermitMock = artifacts.require('DaiLikePermitMock');
-const PermitableMock = artifacts.require('PermitableMock');
+import {
+  DaiLikePermitMock,
+  ERC20PermitMock,
+  PermitableMock,
+} from '../typechain';
 
 const value = toBN(42);
 const nonce = '0';
 
-contract('Permitable', function ([wallet1, wallet2]) {
-  const initContext = async () => {
-    const permittableMock = await PermitableMock.new();
-    const chainId = await web3.eth.getChainId();
-    const account = await web3.eth.accounts.create();
-    const wallet = {
-      address: account.address,
-      privateKey: account.privateKey,
-    };
-    const owner = wallet.address;
-    const holder = owner;
-    const erc20PermitMock: types.ERC20PermitMockInstance = undefined!;
-    const daiLikePermitMock: types.DaiLikePermitMockInstance = undefined!;
-    return {
-      permittableMock,
-      chainId,
-      wallet,
-      owner,
-      holder,
-      erc20PermitMock,
-      daiLikePermitMock,
-    };
-  };
+describe('Permitable', function () {
+  let permitableMock: PermitableMock;
+  let erc20PermitMock: ERC20PermitMock;
+  let daiLikePermitMock: DaiLikePermitMock;
+  let ownerAddress: string;
+  let address1: string;
+  let address2: string;
+  const privateKey = '';
+  const chainId = 1;
+  beforeEach(async () => {
+    const ERC20PermitMock = await ethers.getContractFactory('ERC20PermitMock');
+    const PermitableMock = await ethers.getContractFactory('PermitableMock');
+    const DaiLikePermitMock = await ethers.getContractFactory(
+      'DaiLikePermitMock',
+    );
+    const [owner, wallet1, wallet2] = await ethers.getSigners();
+    ownerAddress = owner.address;
+    address1 = wallet1.address;
+    address2 = wallet2.address;
 
-  let context: Awaited<ReturnType<typeof initContext>> = undefined!;
-
-  before(async () => {
-    context = await initContext();
-  });
-
-  beforeEach(async function () {
-    context.erc20PermitMock = await ERC20PermitMock.new(
+    permitableMock = await PermitableMock.deploy();
+    erc20PermitMock = await ERC20PermitMock.deploy(
       'USDC',
       'USDC',
-      wallet1,
-      toBN(100),
+      address1,
+      BigNumber.from(100),
     );
-    context.daiLikePermitMock = await DaiLikePermitMock.new(
+    daiLikePermitMock = await DaiLikePermitMock.deploy(
       'DAI',
       'DAI',
-      wallet1,
-      toBN(100),
+      address1,
+      BigNumber.from(100),
     );
+    await erc20PermitMock.deployed();
+    await daiLikePermitMock.deployed();
   });
 
   it('should be permitted for IERC20Permit', async function () {
     const permit = await getPermit(
-      context.owner,
-      context.wallet.privateKey,
-      context.erc20PermitMock,
+      ownerAddress,
+      privateKey,
+      erc20PermitMock,
       '1',
-      context.chainId,
-      wallet2,
+      chainId,
+      address2,
       value.toString(),
     );
-    await context.permittableMock.__permit(
-      context.erc20PermitMock.address,
-      permit,
+    await permitableMock.__permit(erc20PermitMock.address, permit);
+    expect(await erc20PermitMock.nonces(ownerAddress)).to.be.equal('1');
+    expect(await erc20PermitMock.allowance(ownerAddress, address2)).to.be.equal(
+      value,
     );
-    expect(
-      await context.erc20PermitMock.nonces(context.owner),
-    ).to.be.bignumber.equal('1');
-    expect(
-      await context.erc20PermitMock.allowance(context.owner, wallet2),
-    ).to.be.bignumber.equal(value);
   });
 
   it('should not be permitted for IERC20Permit', async function () {
     const data = buildData(
-      await context.erc20PermitMock.name(),
+      await erc20PermitMock.name(),
       '1',
-      context.chainId,
-      context.erc20PermitMock.address,
-      context.owner,
-      wallet2,
+      chainId,
+      erc20PermitMock.address,
+      ownerAddress,
+      address2,
       value.toString(),
       nonce,
     );
-    const signature = signWithPk(context.wallet.privateKey, data);
+    const signature = signWithPk(privateKey, data);
     const { v, r, s } = fromRpcSig(signature);
 
-    const permit = web3.eth.abi.encodeParameter(
-      'tuple(address,address,uint256,uint256,uint8,bytes32,bytes32)',
-      [context.owner, wallet1, value, defaultDeadline, v, r, s],
-    );
+    // const permit = ethers.provider.encodeParameter(
+    //   'tuple(address,address,uint256,uint256,uint8,bytes32,bytes32)',
+    //   [ownerAddress, address1, value, defaultDeadline, v, r, s],
+    // );
+    const permit = '0x' + signature;
     await expect(
-      context.permittableMock.__permit(context.erc20PermitMock.address, permit),
+      permitableMock.__permit(erc20PermitMock.address, permit),
     ).to.eventually.be.rejectedWith('ERC20Permit: invalid signature');
   });
 
   it('should be permitted for IDaiLikePermit', async function () {
     const permit = await getPermitLikeDai(
-      context.holder,
-      context.wallet.privateKey,
-      context.daiLikePermitMock,
+      ownerAddress,
+      privateKey,
+      daiLikePermitMock,
       '1',
-      context.chainId,
-      wallet2,
+      chainId,
+      address2,
       true,
     );
-    await context.permittableMock.__permit(
-      context.daiLikePermitMock.address,
-      permit,
-    );
+    await permitableMock.__permit(daiLikePermitMock.address, permit);
 
     const MAX_UINT128 = toBN('2').pow(toBN('128')).sub(toBN('1'));
+    expect(await daiLikePermitMock.nonces(ownerAddress)).to.be.equal(
+      '1',
+    );
     expect(
-      await context.daiLikePermitMock.nonces(context.owner),
-    ).to.be.bignumber.equal('1');
-    expect(
-      await context.daiLikePermitMock.allowance(context.owner, wallet2),
-    ).to.be.bignumber.equal(MAX_UINT128);
+      await daiLikePermitMock.allowance(ownerAddress, address2),
+    ).to.be.equal(MAX_UINT128);
   });
 
   it('should not be permitted for IDaiLikePermit', async function () {
     const data = buildDataLikeDai(
-      await context.daiLikePermitMock.name(),
+      await daiLikePermitMock.name(),
       '1',
-      context.chainId,
-      context.daiLikePermitMock.address,
-      context.holder,
-      wallet2,
+      chainId,
+      daiLikePermitMock.address,
+      ownerAddress,
+      address2,
       nonce,
       true,
     );
-    const signature = signWithPk(context.wallet.privateKey, data);
+    const signature = signWithPk(privateKey, data);
     const { v, r, s } = fromRpcSig(signature);
 
-    const payload = web3.eth.abi.encodeParameter(
-      'tuple(address,address,uint256,uint256,bool,uint8,bytes32,bytes32)',
-      [context.holder, wallet1, nonce, defaultDeadline, true, v, r, s],
-    );
+    // const payload = web3.eth.abi.encodeParameter(
+    //   'tuple(address,address,uint256,uint256,bool,uint8,bytes32,bytes32)',
+    //   [ownerAddress, address1, nonce, defaultDeadline, true, v, r, s],
+    // );
+
+    const payload = '0x' + signature;
 
     await expect(
-      context.permittableMock.__permit(
-        context.daiLikePermitMock.address,
-        payload,
-      ),
+      permitableMock.__permit(daiLikePermitMock.address, payload),
     ).to.eventually.be.rejectedWith('Dai/invalid-permit');
   });
 
   it('should be wrong permit length', async function () {
     const data = buildData(
-      await context.erc20PermitMock.name(),
+      await erc20PermitMock.name(),
       '1',
-      context.chainId,
-      context.erc20PermitMock.address,
-      context.owner,
-      wallet2,
+      chainId,
+      erc20PermitMock.address,
+      ownerAddress,
+      address2,
       value.toString(),
       nonce,
     );
-    const signature = signWithPk(context.wallet.privateKey, data);
+    const signature = signWithPk(privateKey, data);
     const { v, r, s } = fromRpcSig(signature);
 
-    const permit = web3.eth.abi.encodeParameter(
-      'tuple(address,uint256,uint256,uint8,bytes32,bytes32)',
-      [wallet2, value, defaultDeadline, v, r, s],
-    );
+    // const permit = web3.eth.abi.encodeParameter(
+    //   'tuple(address,uint256,uint256,uint8,bytes32,bytes32)',
+    //   [wallet2, value, defaultDeadline, v, r, s],
+    // );
+
+    const permit = '0x' + signature;
 
     await expect(
-      context.permittableMock.__permit(context.erc20PermitMock.address, permit),
+      permitableMock.__permit(erc20PermitMock.address, permit),
     ).to.eventually.be.rejectedWith('BadPermitLength()');
   });
 });

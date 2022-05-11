@@ -1,6 +1,4 @@
-import { promisify } from 'util';
-import { PathLike, promises as fs } from 'fs';
-import { toBN } from './prelude';
+import { toBN } from "web3-utils";
 
 export const gasspectOptionsDefault = {
   minOpGasCost: 300, // minimal gas cost of returned operations
@@ -96,96 +94,104 @@ function _normalizeOp(ops: Op[], i: number) {
   }
 }
 
-export async function profileEVM(
-  txHash: string,
-  instruction: string[],
-  optionalTraceFile?: PathLike | fs.FileHandle,
-) {
-  if (
-    !web3.currentProvider ||
-    typeof web3.currentProvider === 'string' ||
-    !web3.currentProvider.send
-  ) {
-    throw new Error('Unsupported provider');
-  }
-
-  const trace = await promisify(
-    web3.currentProvider.send.bind(web3.currentProvider),
-  )({
-    jsonrpc: '2.0',
-    method: 'debug_traceTransaction',
-    params: [txHash, {}],
-    id: new Date().getTime(),
-  });
-
-  const str = JSON.stringify(trace);
-
-  if (optionalTraceFile) {
-    await fs.writeFile(optionalTraceFile, str);
-  }
-
-  return instruction.map((instr) => {
-    return str.split('"' + instr.toUpperCase() + '"').length - 1;
-  });
+export function profileEVM(...args: any[]) {
+  return [];
 }
 
-export async function gasspectEVM(
-  txHash: string,
-  gasspectOptions: Record<string, unknown> = {},
-  optionalTraceFile?: PathLike | fs.FileHandle,
-) {
-  const options = { ...gasspectOptionsDefault, ...gasspectOptions };
+// export async function profileEVM(
+//   txHash: string,
+//   instruction: string[],
+//   optionalTraceFile?: PathLike | fs.FileHandle,
+// ) {
+//   if (
+//     !web3.currentProvider ||
+//     typeof web3.currentProvider === 'string' ||
+//     !web3.currentProvider.send
+//   ) {
+//     throw new Error('Unsupported provider');
+//   }
 
-  if (
-    !web3.currentProvider ||
-    typeof web3.currentProvider === 'string' ||
-    !web3.currentProvider.send
-  ) {
-    throw new Error('Unsupported provider');
-  }
+//   const trace = await promisify(
+//     web3.currentProvider.send.bind(web3.currentProvider),
+//   )({
+//     jsonrpc: '2.0',
+//     method: 'debug_traceTransaction',
+//     params: [txHash, {}],
+//     id: new Date().getTime(),
+//   });
 
-  const trace = await promisify(
-    web3.currentProvider.send.bind(web3.currentProvider),
-  )({
-    jsonrpc: '2.0',
-    method: 'debug_traceTransaction',
-    params: [txHash, {}],
-    id: new Date().getTime(),
-  });
+//   const str = JSON.stringify(trace);
 
-  const ops: Op[] = trace?.result.structLogs;
+//   if (optionalTraceFile) {
+//     await fs.writeFile(optionalTraceFile, str);
+//   }
 
-  const traceAddress = [0, -1];
-  for (const [i, op] of ops.entries()) {
-    op.traceAddress = traceAddress.slice(0, traceAddress.length - 1);
-    _normalizeOp(ops, i);
+//   return instruction.map((instr) => {
+//     return str.split('"' + instr.toUpperCase() + '"').length - 1;
+//   });
+// }
 
-    if (op.depth + 2 > traceAddress.length) {
-      traceAddress[traceAddress.length - 1] += 1;
-      traceAddress.push(-1);
-    }
-
-    if (op.depth + 2 < traceAddress.length) {
-      traceAddress.pop();
-    }
-  }
-
-  const result = ops
-    .filter((op) => op.gasCost > options.minOpGasCost)
-    .map(
-      (op) =>
-        op.traceAddress.join('-') +
-        '-' +
-        op.op +
-        (options.args ? '(' + (op.args || []).join(',') + ')' : '') +
-        (options.res ? (op.res ? ':0x' + op.res : '') : '') +
-        ' = ' +
-        op.gasCost,
-    );
-
-  if (optionalTraceFile) {
-    await fs.writeFile(optionalTraceFile, JSON.stringify(result));
-  }
-
-  return result;
+export async function gasspectEVM(...args: any[]) {
+  return [];
 }
+
+// export async function gasspectEVM(
+//   txHash: string,
+//   gasspectOptions: Record<string, unknown> = {},
+//   optionalTraceFile?: PathLike | fs.FileHandle,
+// ) {
+//   const options = { ...gasspectOptionsDefault, ...gasspectOptions };
+
+//   if (
+//     !web3.currentProvider ||
+//     typeof web3.currentProvider === 'string' ||
+//     !web3.currentProvider.send
+//   ) {
+//     throw new Error('Unsupported provider');
+//   }
+
+//   const trace = await promisify(
+//     web3.currentProvider.send.bind(web3.currentProvider),
+//   )({
+//     jsonrpc: '2.0',
+//     method: 'debug_traceTransaction',
+//     params: [txHash, {}],
+//     id: new Date().getTime(),
+//   });
+
+//   const ops: Op[] = trace?.result.structLogs;
+
+//   const traceAddress = [0, -1];
+//   for (const [i, op] of ops.entries()) {
+//     op.traceAddress = traceAddress.slice(0, traceAddress.length - 1);
+//     _normalizeOp(ops, i);
+
+//     if (op.depth + 2 > traceAddress.length) {
+//       traceAddress[traceAddress.length - 1] += 1;
+//       traceAddress.push(-1);
+//     }
+
+//     if (op.depth + 2 < traceAddress.length) {
+//       traceAddress.pop();
+//     }
+//   }
+
+//   const result = ops
+//     .filter((op) => op.gasCost > options.minOpGasCost)
+//     .map(
+//       (op) =>
+//         op.traceAddress.join('-') +
+//         '-' +
+//         op.op +
+//         (options.args ? '(' + (op.args || []).join(',') + ')' : '') +
+//         (options.res ? (op.res ? ':0x' + op.res : '') : '') +
+//         ' = ' +
+//         op.gasCost,
+//     );
+
+//   if (optionalTraceFile) {
+//     await fs.writeFile(optionalTraceFile, JSON.stringify(result));
+//   }
+
+//   return result;
+// }

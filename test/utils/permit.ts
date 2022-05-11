@@ -1,3 +1,4 @@
+/* eslint-disable no-dupe-args */
 import {
   MessageTypes,
   signTypedData,
@@ -6,7 +7,7 @@ import {
   TypedMessage,
 } from '@metamask/eth-sig-util';
 import { fromRpcSig } from 'ethereumjs-util';
-import { Token } from './utils';
+// import { Token } from './utils';
 import { constants } from './prelude';
 import BN from 'bn.js';
 
@@ -104,10 +105,12 @@ export function buildDataLikeDai(
   } as const;
 }
 
-export interface PermittableToken extends Token {
-  nonces(owner: string, txDetails?: Truffle.TransactionDetails): Promise<BN>;
-  name(txDetails?: Truffle.TransactionDetails): Promise<string>;
-}
+// export interface PermittableToken extends Token {
+//   // nonces(owner: string, txDetails?: Truffle.TransactionDetails): Promise<BN>;
+//   // name(txDetails?: Truffle.TransactionDetails): Promise<string>;
+//   nonces(owner: string, txDetails?: any): Promise<BN>;
+//   name(txDetails?: any): Promise<string>;
+// }
 
 export function signWithPk<T extends MessageTypes>(
   privateKey: string,
@@ -126,7 +129,8 @@ export function signWithPk<T extends MessageTypes>(
 export async function getPermit(
   owner: string,
   ownerPrivateKey: string,
-  permitContract: PermittableToken,
+  // permitContract: PermittableToken,
+  permitContract: any,
   tokenVersion: string,
   chainId: number,
   spender: string,
@@ -160,7 +164,8 @@ export async function getPermit(
 export async function getPermitLikeDai(
   holder: string,
   holderPrivateKey: string,
-  permitContract: PermittableToken,
+  // permitContract: PermittableToken,
+  permitContract: any,
   tokenVersion: string,
   chainId: number,
   spender: string,

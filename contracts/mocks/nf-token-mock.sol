@@ -7,7 +7,9 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 /**
  * @dev This is an example contract implementation of NFToken.
  */
-abstract contract NFTokenMock is ERC721, Ownable {
+contract NFTokenMock is ERC721, Ownable {
+    constructor() ERC721("NFTokenMock", "NFTM") {}
+
     /**
      * @dev Mints a new NFT.
      * @param _to The address that will own the minted NFT.

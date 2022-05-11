@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import {ERC721}
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
@@ -15,10 +15,9 @@ contract NFTokenMetadataEnumerableMock is ERC721Enumerable, Ownable {
      * @param _name A descriptive name for a collection of NFTs.
      * @param _symbol An abbreviated name for NFTokens.
      */
-    constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
-        nftName = _name;
-        nftSymbol = _symbol;
-    }
+    constructor(string memory _name, string memory _symbol)
+        ERC721(_name, _symbol)
+    {}
 
     /**
      * @dev Mints a new NFT.
@@ -32,7 +31,8 @@ contract NFTokenMetadataEnumerableMock is ERC721Enumerable, Ownable {
         string calldata _uri
     ) external onlyOwner {
         super._mint(_to, _tokenId);
-        super._setTokenUri(_tokenId, _uri);
+        super.tokenURI(_tokenId);
+        // super._setTokenUri(_tokenId, _uri);
     }
 
     /**
@@ -53,43 +53,8 @@ contract NFTokenMetadataEnumerableMock is ERC721Enumerable, Ownable {
      */
     function _burn(uint256 _tokenId) internal virtual override {
         super._burn(_tokenId);
-        if (bytes(idToUri[_tokenId]).length != 0) {
-            delete idToUri[_tokenId];
-        }
-    }
-
-    /**
-     * @notice Use and override this function with caution. Wrong usage can have serious consequences.
-     * @dev Removes a NFT from an address.
-     * @param _from Address from wich we want to remove the NFT.
-     * @param _tokenId Which NFT we want to remove.
-     */
-    function _removeNFToken(address _from, uint256 _tokenId) internal override {
-        super._removeNFToken(_from, _tokenId);
-    }
-
-    /**
-     * @notice Use and override this function with caution. Wrong usage can have serious consequences.
-     * @dev Assigns a new NFT to an address.
-     * @param _to Address to wich we want to add the NFT.
-     * @param _tokenId Which NFT we want to add.
-     */
-    function _addNFToken(address _to, uint256 _tokenId) internal override {
-        super._addNFToken(_to, _tokenId);
-    }
-
-    /**
-     * @dev Helper function that gets NFT count of owner. This is needed for overriding in enumerable
-     * extension to remove double storage(gas optimization) of owner nft count.
-     * @param _owner Address for whom to query the count.
-     * @return Number of _owner NFTs.
-     */
-    function _getOwnerNFTCount(address _owner)
-        internal
-        view
-        override
-        returns (uint256)
-    {
-        return super._getOwnerNFTCount(_owner);
+        // if (bytes(idToUri[_tokenId]).length != 0) {
+        //     delete idToUri[_tokenId];
+        // }
     }
 }
