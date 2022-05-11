@@ -3,9 +3,9 @@
 pragma solidity ^0.8.0;
 pragma abicoder v1;
 
-import "../../contracts/libraries/StringUtil.sol";
+import "../../libraries/StringUtil.sol";
 import "./StringUtilNaive.sol";
-import "../../contracts/GasChecker.sol";
+import "../../GasChecker.sol";
 
 contract StringUtilTest is GasChecker {
     function toHex(uint256 value, uint256 expectedGasCost)

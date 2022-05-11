@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 pragma abicoder v1;
 
-import {RevertReasonParser} from "../../contracts/libraries/RevertReasonParser.sol";
+import {RevertReasonParser} from "../../libraries/RevertReasonParser.sol";
 
 contract RevertReasonParserTest {
     error TestDidNotThrow();
@@ -79,7 +79,7 @@ contract RevertReasonParserTest {
                 invalidReasonPart2,
                 invalidReasonPart3
             );
-            RevertReasonParser.parse(invalidReason, "");
+            RevertReasonParser.parse(invalidReason);
         }
     }
 
@@ -94,7 +94,7 @@ contract RevertReasonParserTest {
         try testFunction() {
             revert TestDidNotThrow();
         } catch (bytes memory reason) {
-            string memory parsedReason = RevertReasonParser.parse(reason, "");
+            bytes memory parsedReason = RevertReasonParser.parse(reason);
             require(
                 keccak256(abi.encodePacked(expectedReason)) ==
                     keccak256(abi.encodePacked(parsedReason)),

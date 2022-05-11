@@ -1,49 +1,47 @@
-import { expect } from '../../src/prelude';
-
-const RevertReasonParserTest = artifacts.require('RevertReasonParserTest');
+import { ethers } from 'hardhat';
+import { RevertReasonParserTest } from '../../typechain';
+import { expect } from 'chai';
 
 describe('RevertReasonParser', async () => {
-  const initContext = async () => {
-    const revertReasonParserTest = await RevertReasonParserTest.new();
-    return { revertReasonParserTest };
-  };
+  let revertReasonParserTest: RevertReasonParserTest;
 
-  let context: Awaited<ReturnType<typeof initContext>> = undefined!;
-
-  before(async () => {
-    context = await initContext();
+  beforeEach(async function () {
+    const RevertReasonParserTest = await ethers.getContractFactory(
+      'RevertReasonParserTest',
+    );
+    revertReasonParserTest = await RevertReasonParserTest.deploy();
   });
 
   describe('parse', async function () {
     it('should be reverted with Invalid revert reason', async function () {
       await expect(
-        context.revertReasonParserTest.testParseWithThrow(),
+        revertReasonParserTest.testParseWithThrow(),
       ).to.eventually.be.rejectedWith('InvalidRevertReason()');
     });
 
     it('should be parsed as empty Error', async function () {
-      await context.revertReasonParserTest.testEmptyStringRevert();
+      await revertReasonParserTest.testEmptyStringRevert();
     });
 
     it('should be parsed as Error', async function () {
-      await context.revertReasonParserTest.testNonEmptyRevert();
+      await revertReasonParserTest.testNonEmptyRevert();
     });
 
     it('should be parsed as Unknown', async function () {
-      await context.revertReasonParserTest.testEmptyRevert();
+      await revertReasonParserTest.testEmptyRevert();
     });
 
     it('should be parsed as Panic', async function () {
-      await context.revertReasonParserTest.testAssertion();
+      await revertReasonParserTest.testAssertion();
     });
 
     it('should be parsed as Error with long string', async function () {
-      await context.revertReasonParserTest.testLongStringRevert();
+      await revertReasonParserTest.testLongStringRevert();
     });
 
     it('should be reverted in _test()', async function () {
       await expect(
-        context.revertReasonParserTest.testWithThrow(),
+        revertReasonParserTest.testWithThrow(),
       ).to.eventually.be.rejectedWith('TestDidNotThrow()');
     });
   });

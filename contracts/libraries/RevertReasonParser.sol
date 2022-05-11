@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.9;
 pragma abicoder v1;
 
 import "./StringUtil.sol";
@@ -23,11 +23,7 @@ library RevertReasonParser {
     bytes4 private constant _PANIC_SELECTOR =
         bytes4(keccak256("Panic(uint256)"));
 
-    function parse(bytes memory data, string memory prefix)
-        internal
-        pure
-        returns (string memory)
-    {
+    function parse(bytes memory data) internal pure returns (bytes memory) {
         // https://solidity.readthedocs.io/en/latest/control-structures.html#revert
         // We assume that revert reason is abi-encoded as Error(string)
         bytes4 selector;
@@ -53,7 +49,7 @@ library RevertReasonParser {
             */
             if (data.length < 68 + bytes(reason).length)
                 revert InvalidRevertReason();
-            return string.concat(prefix, "Error(", reason, ")");
+            return bytes.concat("Error(", bytes(reason), ")");
         }
         // 36 = 4-byte selector + 32 bytes integer
         else if (selector == _PANIC_SELECTOR && data.length == 36) {
@@ -63,8 +59,8 @@ library RevertReasonParser {
                 // 36 = 32 bytes data length + 4-byte selector
                 code := mload(add(data, 36))
             }
-            return string.concat(prefix, "Panic(", code.toHex(), ")");
+            return bytes.concat("Panic(", bytes(code.toHex()), ")");
         }
-        return string.concat(prefix, "Unknown(", data.toHex(), ")");
+        return bytes.concat("Unknown(", bytes(data.toHex()), ")");
     }
 }

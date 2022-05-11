@@ -1,8 +1,14 @@
-import { expect } from '../../src/prelude';
-
-const StringUtilTest = artifacts.require('StringUtilTest');
+import { ethers } from 'hardhat';
+import { expect } from 'chai';
+import { StringUtilTest } from '../../typechain';
 
 describe('StringUtil', async () => {
+  let stringUtilTest: StringUtilTest;
+  beforeEach(async function () {
+    const StringUtilTest = await ethers.getContractFactory('StringUtilTest');
+    stringUtilTest = await StringUtilTest.deploy();
+  });
+
   const uint256TestValue =
     '0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF';
   const uint128TestValue =
@@ -12,17 +18,6 @@ describe('StringUtil', async () => {
   const extremelyLongArray = '0x' + '0f'.repeat(1000);
   const emptyBytes = '0x';
   const singleByte = '0xaf';
-
-  const initContext = async () => {
-    const stringUtilTest = await StringUtilTest.new();
-    return { stringUtilTest };
-  };
-
-  let context: Awaited<ReturnType<typeof initContext>> = undefined!;
-
-  before(async () => {
-    context = await initContext();
-  });
 
   describe('Validity', async () => {
     it('Uint 256', () => test(uint256TestValue));
@@ -38,71 +33,68 @@ describe('StringUtil', async () => {
 
     it('Single byte', () => testBytes(singleByte));
 
-    const test = async (value: string) => {
-      const result = await context.stringUtilTest.toHex(value, 0);
-      const naiveResult = await context.stringUtilTest.toHexNaive(value, 0);
+    async function test(value: string) {
+      const result = await stringUtilTest.toHex(value, 0);
+      const naiveResult = await stringUtilTest.toHexNaive(value, 0);
       expect(result.toLowerCase()).to.be.equal(value.toLowerCase());
       expect(result.toLowerCase()).to.be.equal(naiveResult.toLowerCase());
-    };
+    }
 
-    const testBytes = async (value: string) => {
-      const result = await context.stringUtilTest.toHexBytes(value, 0);
-      const naiveResult = await context.stringUtilTest.toHexNaiveBytes(
-        value,
-        0,
-      );
+    async function testBytes(value: string) {
+      const result = await stringUtilTest.toHexBytes(value, 0);
+      const naiveResult = await stringUtilTest.toHexNaiveBytes(value, 0);
       expect(result.toLowerCase()).to.be.equal(value.toLowerCase());
       expect(result.toLowerCase()).to.be.equal(naiveResult.toLowerCase());
-    };
+    }
   });
 
   describe('Gas usage @skip-on-coverage', async () => {
-    it('Uint 256', () => testGasUint256(uint256TestValue, 917));
+    it('Uint 256', () => testGasUint256(uint256TestValue, 962));
 
-    it('Uint 256 naive', () => testGasNaiveUint256(uint256TestValue, 14175));
+    it('Uint 256 naive', () => testGasNaiveUint256(uint256TestValue, 15967));
 
-    it('Uint 256 as bytes', () => testGasBytes(uint256TestValue, 792));
+    it('Uint 256 as bytes', () => testGasBytes(uint256TestValue, 834));
 
     it('Uint 256 as bytes naive', () =>
-      testGasNaiveBytes(uint256TestValue, 14050));
+      testGasNaiveBytes(uint256TestValue, 15839));
 
-    it('Uint 128', () => testGasUint256(uint128TestValue, 917));
+    it('Uint 128', () => testGasUint256(uint128TestValue, 962));
 
-    it('Uint 128 naive', () => testGasNaiveUint256(uint128TestValue, 14175));
+    it('Uint 128 naive', () => testGasNaiveUint256(uint128TestValue, 15967));
 
-    it('Very long byte array gas', () => testGasBytes(veryLongArray, 1974));
+    it('Very long byte array gas', () => testGasBytes(veryLongArray, 2082));
 
     it('Very long byte array gas naive', () =>
-      testGasNaiveBytes(veryLongArray, 28972));
+      testGasNaiveBytes(veryLongArray, 32686));
 
     it('Extremely long byte array gas', () =>
-      testGasBytes(extremelyLongArray, 19131));
+      testGasBytes(extremelyLongArray, 20196));
 
     it('Extremely long byte array gas naive', () =>
-      testGasNaiveBytes(extremelyLongArray, 426795));
+      testGasNaiveBytes(extremelyLongArray, 481824));
 
-    it('Empty bytes', () => testGasBytes(emptyBytes, 201));
+    it('Empty bytes', () => testGasBytes(emptyBytes, 210));
 
-    it('Empty bytes naive', () => testGasNaiveBytes(emptyBytes, 406));
+    it('Empty bytes naive', () => testGasNaiveBytes(emptyBytes, 435));
 
-    it('Single byte', () => testGasBytes(singleByte, 792));
+    it('Single byte', () => testGasBytes(singleByte, 834));
 
-    it('Single byte naive', () => testGasNaiveBytes(singleByte, 832));
+    it('Single byte naive', () => testGasNaiveBytes(singleByte, 916));
 
-    const testGasUint256 = async (value: string, expectedGas: number) => {
-      await context.stringUtilTest.toHex(value, expectedGas);
-    };
+    async function testGasUint256(value: string, expectedGas: number) {
+      await stringUtilTest.toHex(value, expectedGas);
+    }
 
-    const testGasBytes = async (value: string, expectedGas: number) => {
-      await context.stringUtilTest.toHexBytes(value, expectedGas);
-    };
+    async function testGasBytes(value: string, expectedGas: number) {
+      await stringUtilTest.toHexBytes(value, expectedGas);
+    }
 
-    const testGasNaiveUint256 = async (value: string, expectedGas: number) => {
-      await context.stringUtilTest.toHexNaive(value, expectedGas);
-    };
+    async function testGasNaiveUint256(value: string, expectedGas: number) {
+      await stringUtilTest.toHexNaive(value, expectedGas);
+    }
 
-    const testGasNaiveBytes = async (value: string, expectedGas: number) => {
-      await context.stringUtilTest.toHexNaiveBytes(value, expectedGas);
-    };
+    async function testGasNaiveBytes(value: string, expectedGas: number) {
+      await stringUtilTest.toHexNaiveBytes(value, expectedGas);
+    }
   });
 });
