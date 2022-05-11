@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 
-import {AddressSet} from "../contracts/libraries/AddressSet.sol";
+import {AddressSet} from "../libraries/AddressSet.sol";
 
 contract AddressSetMock {
     using AddressSet for AddressSet.Data;

@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { constants } from '../src/utils/prelude';
 
-describe.only('AddressArray', function () {
+describe('AddressArray', function () {
   let addressArrayMock: AddressArrayMock;
   let address1: string;
   let address2: string;
