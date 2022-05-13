@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { NFTokenMetadataTestMock } from '../../typechain';
 
-describe('nf-token-metadata', () => {
+describe('NFTokenMetadataTestMock', () => {
   let nfToken: NFTokenMetadataTestMock;
   let ownerAddress: string;
   let address1: string;

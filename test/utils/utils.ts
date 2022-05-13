@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat';
 import { constants, time } from './prelude';
 import BN from 'bn.js';
-import { toBN } from "web3-utils";
+import { toBN } from 'web3-utils';
 
 export async function timeIncreaseTo(seconds: number | string | BN) {
   const delay = 1000 - new Date().getMilliseconds();
