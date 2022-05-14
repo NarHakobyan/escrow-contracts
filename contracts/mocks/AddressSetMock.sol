@@ -9,22 +9,22 @@ contract AddressSetMock {
     AddressSet.Data private _self;
 
     function length() external view returns (uint256) {
-        return AddressSet.length(_self);
+        return _self.length();
     }
 
     function at(uint256 index) external view returns (address) {
-        return AddressSet.at(_self, index);
+        return _self.at(index);
     }
 
     function contains(address item) external view returns (bool) {
-        return AddressSet.contains(_self, item);
+        return _self.contains(item);
     }
 
     function add(address item) external returns (bool) {
-        return AddressSet.add(_self, item);
+        return _self.add(item);
     }
 
     function remove(address item) external returns (bool) {
-        return AddressSet.remove(_self, item);
+        return _self.remove(item);
     }
 }

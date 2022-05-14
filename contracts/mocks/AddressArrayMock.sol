@@ -9,26 +9,26 @@ contract AddressArrayMock {
     AddressArray.Data private _self;
 
     function length() external view returns (uint256) {
-        return AddressArray.length(_self);
+        return _self.length();
     }
 
     function at(uint256 i) external view returns (address) {
-        return AddressArray.at(_self, i);
+        return _self.at(i);
     }
 
     function get() external view returns (address[] memory arr) {
-        return AddressArray.get(_self);
+        return _self.get();
     }
 
     function push(address account) external returns (uint256) {
-        return AddressArray.push(_self, account);
+        return _self.push(account);
     }
 
     function pop() external {
-        AddressArray.pop(_self);
+        _self.pop();
     }
 
     function set(uint256 index, address account) external {
-        AddressArray.set(_self, index, account);
+        _self.set(index, account);
     }
 }

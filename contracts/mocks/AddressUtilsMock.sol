@@ -6,11 +6,7 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 contract AddressUtilsMock {
     using Address for address;
 
-    function isContract(address _addr)
-        external
-        view
-        returns (bool addressCheck)
-    {
-        addressCheck = _addr.isContract();
+    function isContract(address _addr) external view returns (bool) {
+        return _addr.isContract();
     }
 }
