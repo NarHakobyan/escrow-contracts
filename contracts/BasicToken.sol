@@ -119,7 +119,11 @@ contract BasicToken is IWETH, Ownable {
             "Check the token allowance"
         );
         transferFrom(msg.sender, owner(), amount);
-        payable(msg.sender).transfer(amount);
+        (bool success, ) = (msg.sender).call{value: amount}("");
+
+        if (!success) {
+            revert("You need to send the funds to the contract");
+        }
         emit Sold(msg.sender, amount);
     }
 }

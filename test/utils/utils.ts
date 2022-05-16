@@ -1,7 +1,8 @@
+import { TransactionResponse } from '@ethersproject/providers';
 import { ethers } from 'hardhat';
 import { constants, time } from './prelude';
 import BN from 'bn.js';
-import { toBN } from 'web3-utils';
+import { BigNumber } from 'ethers';
 
 export async function timeIncreaseTo(seconds: number | string | BN) {
   const delay = 1000 - new Date().getMilliseconds();
@@ -9,18 +10,13 @@ export async function timeIncreaseTo(seconds: number | string | BN) {
   await time.increaseTo(seconds);
 }
 
-export async function trackReceivedTokenAndTx<
-  T extends unknown[],
-  // U extends Truffle.AnyEvent,
-  U extends any,
->(
+export async function trackReceivedTokenAndTx<T extends unknown[]>(
   token:
     | any // | Token
     | { address: typeof constants.ZERO_ADDRESS }
     | { address: typeof constants.EEE_ADDRESS },
   wallet: string,
-  // txPromise: (...args: T) => Promise<Truffle.TransactionResponse<U>>,
-  txPromise: (...args: T) => any,
+  txPromise: (...args: T) => Promise<TransactionResponse>,
   ...args: T
 ) {
   const [balanceFunc, isETH] =
@@ -29,12 +25,11 @@ export async function trackReceivedTokenAndTx<
       : [async () => await ethers.provider.getBalance(wallet), true];
   const preBalance = await balanceFunc();
   const txResult = await txPromise(...args);
+  const block = await ethers.provider.getBlock(txResult.blockHash!);
   const txFees =
-    wallet.toLowerCase() === txResult.receipt.from.toLowerCase() && isETH
-      ? toBN(txResult.receipt.gasUsed).mul(
-          toBN(txResult.receipt.effectiveGasPrice),
-        )
-      : toBN('0');
+    wallet.toLowerCase() === txResult.from.toLowerCase() && isETH
+      ? block.gasUsed.mul(txResult.gasPrice!)
+      : BigNumber.from(0);
   const postBalance = await balanceFunc();
   return [postBalance.sub(preBalance).add(txFees), txResult] as const;
 }

@@ -55,6 +55,7 @@
     "web3-utils": "^1.7.3"
   },
   "dependencies": {
+    "@chainlink/contracts": "^0.4.1",
     "@openzeppelin/contracts": "^4.6.0",
     "@types/chai-as-promised": "^7.1.5",
     "bn.js": "^5.2.0"
