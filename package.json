@@ -6,6 +6,9 @@
   "scripts": {
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint --fix . --ext .ts",
+    "generate:graph": "solgraph ./contracts/* > ./graph/Angrybird.dot",
+    "generate:graph": "for FILE in ./contracts*; do cat $FILE | solgraph > ./graph/Angrybird.dot; done",
+    "lint:sol": "npx solhint 'contracts/**/*.sol'",
     "test": "TS_NODE_TRANSPILE_ONLY=1 npx hardhat test"
   },
   "keywords": [],
@@ -35,6 +38,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.2.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-promise": "^6.0.0",
@@ -42,11 +46,13 @@
     "ethereumjs-util": "^7.1.4",
     "ethers": "^5.6.5",
     "hardhat": "^2.9.3",
+    "hardhat-deploy": "^0.11.10",
     "hardhat-gas-reporter": "^1.0.8",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
     "prettier": "^2.6.2",
     "prettier-plugin-solidity": "^1.0.0-beta.13",
+    "solgraph": "^0.3.3",
     "solhint": "^3.3.7",
     "solidity-coverage": "^0.7.21",
     "ts-node": "^10.7.0",
@@ -56,6 +62,7 @@
   },
   "dependencies": {
     "@chainlink/contracts": "^0.4.1",
+    "@ethersproject/abstract-provider": "^5.6.1",
     "@openzeppelin/contracts": "^4.6.0",
     "@types/chai-as-promised": "^7.1.5",
     "bn.js": "^5.2.0"

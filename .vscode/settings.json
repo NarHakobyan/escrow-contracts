@@ -1,4 +1,9 @@
 {
   "mochaExplorer.files": "test/**/*.{j,t}s",
-  "solidity-va.hover": true
+  "solidity-va.hover": true,
+  "workbench.editor.autoLockGroups": {
+    "workbench.editorinputs.searchEditorInput": true
+  },
+  "workbench.colorTheme": "Solidity Visual Developer Dark",
+  "cSpell.words": ["nomiclabs"]
 }

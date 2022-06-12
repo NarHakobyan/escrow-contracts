@@ -7,8 +7,6 @@ async function run() {
   console.log('Contract addy:', byEpicNFT.address);
 
   const [owner] = await ethers.getSigners();
-
-  console.log(owner);
 }
 
 run();

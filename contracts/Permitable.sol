@@ -14,12 +14,10 @@ contract Permitable {
         if (permit.length > 0) {
             bool success;
             if (permit.length == 32 * 7) {
-                // solhint-disable-next-line avoid-low-level-calls
                 (success, ) = token.call(
                     abi.encodePacked(IERC20Permit.permit.selector, permit)
                 );
             } else if (permit.length == 32 * 8) {
-                // solhint-disable-next-line avoid-low-level-calls
                 (success, ) = token.call(
                     abi.encodePacked(IDaiLikePermit.permit.selector, permit)
                 );

@@ -7,7 +7,9 @@ import '@nomiclabs/hardhat-waffle';
 import '@typechain/hardhat';
 import 'hardhat-gas-reporter';
 import 'solidity-coverage';
+import 'hardhat-deploy';
 import networks from './hardhat.networks';
+import './tasks/nft';
 
 dotenv.config();
 
@@ -26,9 +28,21 @@ task('accounts', 'Prints the list of accounts', async (_taskArgs, hre) => {
 
 const config: HardhatUserConfig = {
   solidity: '0.8.9',
+  paths: {
+    artifacts: './artifacts',
+  },
+  typechain: {
+    outDir: 'typechain',
+    target: 'ethers-v5',
+    alwaysGenerateOverloads: false, // should overloads with full signatures like deposit(uint256) be generated always, even if there are no overloads?
+    externalArtifacts: [], // optional array of glob patterns with external artifacts to process (for example external libs from node_modules)
+  },
   networks,
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
+    outputFile: 'gas-report.txt',
+    // coinmarketcap: COINMARKETCAP_API_KEY,
+    noColors: true,
     currency: 'USD',
   },
   etherscan: {

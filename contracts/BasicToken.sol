@@ -1,44 +1,39 @@
 // SPDX-License-Identifier: Unlicensed
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.0;
 
-import {IWETH} from "./interfaces/IWETH.sol";
-import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-contract BasicToken is IWETH, Ownable {
+interface IWETH is IERC20 {
+    function deposit() external payable;
+
+    function withdraw(uint256 amount) external;
+}
+
+
+contract BasicToken is IWETH, IERC20Metadata, Ownable {
     using SafeMath for uint256;
 
-    string public constant NAME = "BasicToken";
-    string public constant SYMBOL = "BTC";
-    uint8 public constant DECIMALS = 18;
+    string public constant name = "BasicToken";
+    string public constant symbol = "BTC";
+    uint8 public constant decimals = 18;
 
     mapping(address => uint256) private balances;
 
     mapping(address => mapping(address => uint256)) private allowed;
 
-    uint256 private totalSupply_ = 100 ether;
+    uint256 private constant _totalSupply = 1000000 ether;
 
     event Bought(address indexed buyer, uint256 value);
     event Sold(address indexed seller, uint256 value);
 
     constructor() {
-        balances[owner()] = totalSupply_;
+        balances[owner()] = _totalSupply;
     }
 
-    function name() public pure returns (string memory) {
-        return NAME;
-    }
-
-    function symbol() public pure returns (string memory) {
-        return SYMBOL;
-    }
-
-    function decimals() public pure returns (uint8) {
-        return DECIMALS;
-    }
-
-    function totalSupply() public view override returns (uint256) {
-        return totalSupply_;
+    function totalSupply() external pure returns (uint256) {
+      return _totalSupply;
     }
 
     function balanceOf(address tokenOwner)
