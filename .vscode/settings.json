@@ -4,6 +4,6 @@
   "workbench.editor.autoLockGroups": {
     "workbench.editorinputs.searchEditorInput": true
   },
-  "workbench.colorTheme": "Solidity Visual Developer Dark",
+  "workbench.colorTheme": "Solidity Visual Developer Light (Visual Studio)",
   "cSpell.words": ["nomiclabs"]
 }
