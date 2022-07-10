@@ -1,9 +1,9 @@
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
 
-describe("BoxV2", () => {
+describe('BoxV2', () => {
   it("Should return the new value once it's changed", async () => {
-    const Box = await ethers.getContractFactory("BoxV2");
+    const Box = await ethers.getContractFactory('BoxV2');
     const box = await Box.deploy();
     await box.deployed();
 
@@ -16,8 +16,8 @@ describe("BoxV2", () => {
 
     expect(await box.retrieve()).to.equal(42);
   });
-  it("Should increase the new value", async () => {
-    const Box = await ethers.getContractFactory("BoxV2");
+  it('Should increase the new value', async () => {
+    const Box = await ethers.getContractFactory('BoxV2');
     const box = await Box.deploy();
     await box.deployed();
 

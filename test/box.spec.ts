@@ -1,9 +1,9 @@
-const { expect } = require("chai");
-const { ethers } = require("hardhat");
+import { expect } from 'chai';
+import { ethers } from 'hardhat';
 
-describe("Box", () => {
+describe('Box', () => {
   it("Should return the new value once it's changed", async () => {
-    const Box = await ethers.getContractFactory("Box");
+    const Box = await ethers.getContractFactory('Box');
     const box = await Box.deploy();
     await box.deployed();
 

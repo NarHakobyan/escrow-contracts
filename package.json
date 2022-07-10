@@ -6,7 +6,6 @@
   "scripts": {
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint --fix . --ext .ts",
-    "generate:graph": "solgraph ./contracts/* > ./graph/Angrybird.dot",
     "generate:graph": "for FILE in ./contracts*; do cat $FILE | solgraph > ./graph/Angrybird.dot; done",
     "lint:sol": "npx solhint 'contracts/**/*.sol'",
     "test": "TS_NODE_TRANSPILE_ONLY=1 npx hardhat test"
@@ -21,6 +20,7 @@
     "@nomiclabs/hardhat-etherscan": "^3.0.3",
     "@nomiclabs/hardhat-solhint": "^2.0.1",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
+    "@openzeppelin/hardhat-upgrades": "^1.19.0",
     "@openzeppelin/test-helpers": "^0.5.15",
     "@typechain/ethers-v5": "^7.2.0",
     "@typechain/hardhat": "^2.3.1",
@@ -46,6 +46,7 @@
     "ethereumjs-util": "^7.1.4",
     "ethers": "^5.6.5",
     "hardhat": "^2.9.3",
+    "hardhat-contract-sizer": "^2.6.1",
     "hardhat-deploy": "^0.11.10",
     "hardhat-gas-reporter": "^1.0.8",
     "mocha": "^10.0.0",

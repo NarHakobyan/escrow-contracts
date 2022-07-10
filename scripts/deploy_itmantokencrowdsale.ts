@@ -4,30 +4,30 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 // eslint-disable-next-line import/no-extraneous-dependencies
-const { ethers } = require("hardhat");
+import { ethers } from 'hardhat';
 
 async function latestTime() {
-  const block = await ethers.provider.getBlock("latest");
+  const block = await ethers.provider.getBlock('latest');
   return block.timestamp;
 }
 
 const duration = {
-  seconds(val) {
+  seconds(val: number) {
     return val;
   },
-  minutes(val) {
+  minutes(val: number) {
     return val * this.seconds(60);
   },
-  hours(val) {
+  hours(val: number) {
     return val * this.minutes(60);
   },
-  days(val) {
+  days(val: number) {
     return val * this.hours(24);
   },
-  weeks(val) {
+  weeks(val: number) {
     return val * this.days(7);
   },
-  years(val) {
+  years(val: number) {
     return val * this.days(365);
   },
 };
@@ -41,51 +41,48 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const ITManToken = await ethers.getContractFactory("ITManToken");
+  const ITManToken = await ethers.getContractFactory('ITManToken');
   const itManToken = await ITManToken.deploy();
 
   await itManToken.deployed();
-  console.log("ITManToken deployed to:", itManToken.address);
-  console.log("Name", await itManToken.name());
-  console.log("Symbol", await itManToken.symbol());
-  console.log("Decimals", await itManToken.decimals());
+  console.log('ITManToken deployed to:', itManToken.address);
+  console.log('Name', await itManToken.name());
+  console.log('Symbol', await itManToken.symbol());
+  console.log('Decimals', await itManToken.decimals());
   const totalSupply = await itManToken.totalSupply();
-  console.log("Total Supply", totalSupply);
+  console.log('Total Supply', totalSupply);
   const owner = await itManToken.owner();
-  console.log("Owner", owner);
+  console.log('Owner', owner);
 
   // deploy crowdsale contract
-  const ITManTokenCrowdsale = await ethers.getContractFactory("ITManTokenCrowdsale");
+  const ITManTokenCrowdsale = await ethers.getContractFactory(
+    'ITManTokenCrowdsale',
+  );
   const rate = 500; // 500 wei per token
   const latestBlockTime = await latestTime();
   const openingTime = latestBlockTime + duration.minutes(1);
   const closeTime = openingTime + duration.weeks(1); // 1 week
-  console.log("openingTime", openingTime);
-  console.log("closeTime", closeTime);
+  console.log('openingTime', openingTime);
+  console.log('closeTime', closeTime);
   const itManTokenCrowdsale = await ITManTokenCrowdsale.deploy(
     rate,
     owner,
     itManToken.address,
     owner,
     openingTime,
-    closeTime
+    closeTime,
   );
 
   await itManTokenCrowdsale.deployed();
-  console.log("ITManTokenCrowdsale deployed to:", itManTokenCrowdsale.address);
+  console.log('ITManTokenCrowdsale deployed to:', itManTokenCrowdsale.address);
 
   // approve crowdsale contract to spend 70% tokens
   await itManToken.approve(
     itManTokenCrowdsale.address,
-    totalSupply.mul(ethers.BigNumber.from(70)).div(ethers.BigNumber.from(100))
+    totalSupply.mul(ethers.BigNumber.from(70)).div(ethers.BigNumber.from(100)),
   );
 }
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+main();

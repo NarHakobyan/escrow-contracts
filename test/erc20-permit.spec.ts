@@ -1,9 +1,15 @@
 import { expect } from 'chai';
-import { ethers, getNamedAccounts } from "hardhat";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { BigNumber, Contract } from "ethers";
+import { ethers, getNamedAccounts } from 'hardhat';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { BigNumber, Contract } from 'ethers';
 
-async function getPermitSignature(signer: SignerWithAddress, token: Contract, spender: string, value: number, deadline: BigNumber) {
+async function getPermitSignature(
+  signer: SignerWithAddress,
+  token: Contract,
+  spender: string,
+  value: number,
+  deadline: BigNumber,
+) {
   const [nonce, name, version, chainId] = await Promise.all([
     token.nonces(signer.address),
     token.name(),

@@ -1,6 +1,6 @@
 import { ethers } from 'hardhat';
 
-const main = async () => {
+async function main() {
   const waveContractFactory = await ethers.getContractFactory('WavePortal');
   const waveContract = await waveContractFactory.deploy();
   await waveContract.deployed();
@@ -21,6 +21,6 @@ const main = async () => {
 
   const allWaves = await waveContract.getAllWaves();
   console.log(allWaves);
-};
+}
 
 main();

@@ -1,9 +1,16 @@
 import { task, types } from 'hardhat/config';
-import { Contract } from 'ethers';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { env } from '../lib/env';
-import { getContract } from '../lib/contract';
-import { getWallet } from '../lib/wallet';
+import { getContract } from './lib/contract';
+import { env } from './lib/env';
+import { Contract } from 'ethers';
+
+task('block-number', 'Prints the current block number').setAction(
+  async (taskArgs, hre) => {
+    await hre.ethers.provider.getBlockNumber().then((blockNumber) => {
+      console.log(`Current block number: ${blockNumber}`);
+    });
+  },
+);
 
 task('deploy-contract', 'Deploy NFT contract').setAction(async (_, hre) => {
   return hre.ethers
@@ -27,3 +34,6 @@ task('mint-nft', 'Mint an NFT')
         process.stdout.write(`TX hash: ${tr.hash}`);
       });
   });
+function getWallet(): any {
+  throw new Error('Function not implemented.');
+}
