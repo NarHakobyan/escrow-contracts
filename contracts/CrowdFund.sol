@@ -5,7 +5,7 @@
 // Users can pledge, transferring their token to a campaign.
 // After the campaign ends, campaign creator can claim the funds if total amount pledged is more than the campaign goal.
 // Otherwise, campaign did not reach it's goal, users can withdraw their pledge.
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.7;
 
 interface IERC20 {
     function transfer(address, uint256) external returns (bool);

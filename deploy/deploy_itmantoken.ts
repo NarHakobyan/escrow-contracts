@@ -1,10 +1,10 @@
+import { ethers } from 'ethers';
 // We require the Hardhat Runtime Environment explicitly here. This is optional
 // but useful for running the script in a standalone fashion through `node <script>`.
 //
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 // eslint-disable-next-line import/no-extraneous-dependencies
-import hre from 'hardhat';
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -15,7 +15,7 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const ITManToken = await hre.ethers.getContractFactory('ITManToken');
+  const ITManToken = await ethers.getContractFactory('ITManToken');
   const itManToken = await ITManToken.deploy();
 
   await itManToken.deployed();

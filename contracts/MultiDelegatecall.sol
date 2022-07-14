@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // An example of calling multiple functions with a single transaction, using delegatecall.
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.7;
 
 contract MultiDelegatecall {
     error DelegatecallFailed();

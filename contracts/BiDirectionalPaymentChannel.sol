@@ -2,7 +2,7 @@
 // Bi-directional payment channels allow participants Alice and Bob to repeatedly transfer Ether off chain.
 
 // Payments can go both ways, Alice pays Bob and Bob pays Alice.
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.7;
 pragma experimental ABIEncoderV2;
 
 /*

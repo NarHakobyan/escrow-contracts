@@ -9,7 +9,7 @@
 // After the auction
 // Highest bidder becomes the new owner of NFT.
 // The seller receives the highest bid of ETH.
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.7;
 
 interface IERC721 {
     function safeTransferFrom(

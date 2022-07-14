@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 //An example of contract that aggregates multiple queries using a for loop and staticcall.
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.7;
 
 contract MultiCall {
     function multiCall(address[] calldata targets, bytes[] calldata data)

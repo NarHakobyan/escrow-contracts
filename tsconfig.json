@@ -11,6 +11,6 @@
     "esModuleInterop": true
   },
   "exclude": ["dist", "node_modules"],
-  "include": ["test", "src", "scripts", "decs.d.ts", "typechain/**/*", "fixtures.ts"],
+  "include": ["test", "src", "scripts", "decs.d.ts", "typechain/**/*", "fixtures.ts", "deploy/deploy_greeter.ts"],
   "files": ["./hardhat.config.ts"]
 }

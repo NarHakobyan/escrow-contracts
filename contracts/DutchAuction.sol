@@ -7,7 +7,7 @@
 // Price of NFT decreases over time.
 // Participants can buy by depositing ETH greater than the current price computed by the smart contract.
 // Auction ends when a buyer buys the NFT.
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.7;
 
 interface IERC721 {
     function transferFrom(
